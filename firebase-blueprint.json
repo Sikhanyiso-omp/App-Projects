@@ -1,0 +1,70 @@
+{
+  "entities": {
+    "Task": {
+      "title": "Task",
+      "description": "A productivity task that requires verification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string", "enum": ["study", "work", "fitness", "other"] },
+        "status": { "type": "string", "enum": ["pending", "verifying", "completed", "failed"] },
+        "createdAt": { "type": "number" },
+        "deadline": { "type": "number" },
+        "completedAt": { "type": "number" },
+        "proofType": { "type": "string", "enum": ["photo", "code", "answer", "none"] },
+        "proofUrl": { "type": "string" },
+        "proofAnswer": { "type": "string" },
+        "points": { "type": "number" }
+      },
+      "required": ["userId", "title", "status", "createdAt"]
+    },
+    "UserStats": {
+      "title": "UserStats",
+      "description": "Gamified statistics for the user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "totalPoints": { "type": "number" },
+        "level": { "type": "number" },
+        "xp": { "type": "number" },
+        "dailyScore": { "type": "number" },
+        "consistencyStreak": { "type": "number" },
+        "productivityScore": { "type": "number" },
+        "timeWasted": { "type": "number" },
+        "timeProductive": { "type": "number" }
+      },
+      "required": ["userId"]
+    },
+    "AppBlockRule": {
+      "title": "AppBlockRule",
+      "description": "Rules for blocking specific applications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "appName": { "type": "string" },
+        "isBlocked": { "type": "boolean" },
+        "unlockCondition": { "type": "string", "enum": ["task", "timer"] },
+        "conditionValue": { "type": "string" }
+      },
+      "required": ["userId", "appName", "isBlocked"]
+    }
+  },
+  "firestore": {
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "User tasks"
+    },
+    "/stats/{userId}": {
+      "schema": "UserStats",
+      "description": "User gamification stats"
+    },
+    "/blockRules/{ruleId}": {
+      "schema": "AppBlockRule",
+      "description": "App blocking rules"
+    }
+  }
+}

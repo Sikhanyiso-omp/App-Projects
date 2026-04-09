@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: tasks
+    // Fields: id, userId, title, description, category, status, createdAt, deadline, completedAt, proofType, proofUrl, proofAnswer, points
+    //
+    // Collection: stats
+    // Fields: userId, totalPoints, level, xp, dailyScore, consistencyStreak, productivityScore, timeWasted, timeProductive
+    //
+    // Collection: blockRules
+    // Fields: id, userId, appName, isBlocked, unlockCondition, conditionValue
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isValidTask(data) {
+      return data.userId is string &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.status in ['pending', 'verifying', 'completed', 'failed'] &&
+             data.createdAt is number;
+    }
+
+    function isValidStats(data) {
+      return data.userId is string &&
+             data.totalPoints is number &&
+             data.level is number &&
+             data.xp is number;
+    }
+
+    function isValidBlockRule(data) {
+      return data.userId is string &&
+             data.appName is string &&
+             data.isBlocked is bool;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /tasks/{taskId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidTask(request.resource.data);
+      allow update: if isDocOwner() && isValidTask(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /stats/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidStats(request.resource.data);
+      allow update: if isOwner(userId) && isValidStats(request.resource.data);
+    }
+
+    match /blockRules/{ruleId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidBlockRule(request.resource.data);
+      allow update: if isDocOwner() && isValidBlockRule(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+  }
+}

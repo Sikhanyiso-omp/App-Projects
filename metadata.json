@@ -1,0 +1,5 @@
+{
+  "name": "MindLock: AI Behavior Control",
+  "description": "A powerful behavior control system that enforces productivity through AI-driven app blocking, task verification, and gamified discipline.",
+  "requestFramePermissions": ["camera"]
+}
