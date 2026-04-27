@@ -1,20 +1,54 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Ngxatsho Legacy Wear - Commercial-Grade Starter
 
-# Run and deploy your AI Studio app
+A full-stack ecommerce application for Legacy Wear with secure authentication, product catalog, cart, and order management.
 
-This contains everything you need to run your app locally.
+## Architecture
+- **Frontend**: React + Vite + TypeScript
+- **Backend**: Express REST API with validation, authentication, and inventory/order logic
+- **Database**: File-backed JSON datastore (`data/legacy-wear.json`) with seeded catalog data
+- **Auth**: Email/password login plus signed bearer tokens
 
-View your app in AI Studio: https://ai.studio/apps/bfbf3035-39f4-420e-ab0e-b536d26bbcd5
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
+## Quick Start
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```bash
+   npm install
+   ```
+2. Copy environment file:
+   ```bash
+   cp .env.example .env
+   ```
+3. Run backend API:
+   ```bash
+   npm run dev:server
+   ```
+4. Run frontend app:
+   ```bash
+   npm run dev
+   ```
+
+## API Endpoints
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/products`
+- `POST /api/orders`
+- `GET /api/orders/me`
+
+## Security Highlights
+- Security response headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`)
+- CORS allowlist from env
+- Rate limiting per IP window
+- Password hashing via Node crypto `scrypt`
+- Signed bearer token auth
+- Input validation with strict server-side checks
+
+## Testing Strategy
+- Unit tests for service logic and validation rules
+- Integration tests for auth/orders endpoints
+- E2E tests for catalog/cart/checkout user journeys
+- Security tests for auth, rate limits, and malformed input
+
+## Deployment
+- Build frontend: `npm run build`
+- Run API with `npm run start:server` behind a reverse proxy (Nginx/Caddy)
+- Persist the `data/` volume
+- Set production env vars for `JWT_SECRET`, `CORS_ORIGIN`, `DB_PATH`, `PORT`
