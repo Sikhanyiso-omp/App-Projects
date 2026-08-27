@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireChatGPTUser } from "@/app/chatgpt-auth";
 import AppShell from "@/app/components/app-shell";
 import { ensureProfile, getDashboardData } from "@/lib/data";
+import DiagnosticImporter from "./diagnostic-importer";
 import TaskList from "./task-list";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <AppShell active="dashboard" user={user}>
+      <DiagnosticImporter />
       <header className="product-topbar">
         <div><p>Good to see you,</p><h1>{user.fullName?.split(" ")[0] ?? user.displayName.split("@")[0]}</h1></div>
         <div className="topbar-actions"><span className="module-chip">{data.module.code} · {data.module.assessmentLabel}</span><Link className="button button-small button-ink" href="/mock">Write a mock</Link></div>

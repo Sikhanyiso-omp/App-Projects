@@ -42,21 +42,18 @@ export async function ensureSeedData() {
     }
   }
 
-  const existingQuestions = await db.select({ value: count() }).from(questions).where(eq(questions.moduleId, moduleRow.id));
-  if ((existingQuestions[0]?.value ?? 0) === 0) {
-    for (const question of questionSeeds) {
-      await db.insert(questions).values({
-        moduleId: moduleRow.id,
-        topic: question.topic,
-        prompt: question.prompt,
-        optionsJson: JSON.stringify(question.options),
-        correctIndex: question.correctIndex,
-        explanation: question.explanation,
-        difficulty: question.difficulty,
-        marks: question.marks,
-        assessmentType: "mock",
-      });
-    }
+  for (const question of questionSeeds) {
+    await db.insert(questions).values({
+      moduleId: moduleRow.id,
+      topic: question.topic,
+      prompt: question.prompt,
+      optionsJson: JSON.stringify(question.options),
+      correctIndex: question.correctIndex,
+      explanation: question.explanation,
+      difficulty: question.difficulty,
+      marks: question.marks,
+      assessmentType: "mock",
+    }).onConflictDoNothing();
   }
   return moduleRow;
 }

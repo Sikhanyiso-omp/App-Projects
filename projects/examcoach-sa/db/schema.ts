@@ -51,7 +51,7 @@ export const questions = sqliteTable("questions", {
   assessmentType: text("assessment_type").notNull().default("practice"),
   marks: integer("marks").notNull().default(2),
   status: text("status").notNull().default("published"),
-});
+}, (table) => [uniqueIndex("questions_module_prompt_idx").on(table.moduleId, table.prompt)]);
 
 export const attempts = sqliteTable("attempts", {
   id: integer("id").primaryKey({ autoIncrement: true }),

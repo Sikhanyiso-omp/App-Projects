@@ -58,6 +58,15 @@ export default function DiagnosticClient() {
   if (finished) {
     const percent = score * 20;
     const readiness = Math.max(18, Math.min(82, percent - 4));
+    const saveDiagnostic = () => {
+      window.localStorage.setItem("examcoach:pending-diagnostic", JSON.stringify({
+        assessmentType: "practice",
+        score,
+        total: questions.length,
+        readiness,
+        answers,
+      }));
+    };
     return (
       <section className="diagnostic-results shell">
         <div className="result-summary">
@@ -65,7 +74,7 @@ export default function DiagnosticClient() {
           <h1>You are <em>{readiness}% ready</em> for this scope.</h1>
           <p>You answered {score} of {questions.length} correctly. This is a starting point—not a prediction of your final mark.</p>
           <div className="result-actions">
-            <Link className="button button-primary" href="/signin-with-chatgpt?return_to=%2Fdashboard">Save my plan →</Link>
+            <Link className="button button-primary" href="/signin-with-chatgpt?return_to=%2Fdashboard" onClick={saveDiagnostic}>Save my plan →</Link>
             <button className="button button-ghost" onClick={() => { setIndex(0); setAnswers([]); setSelected(null); setRevealed(false); }}>Try again</button>
           </div>
         </div>

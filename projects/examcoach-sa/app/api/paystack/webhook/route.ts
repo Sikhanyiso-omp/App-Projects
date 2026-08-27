@@ -17,7 +17,12 @@ export async function POST(request: Request) {
   const event = JSON.parse(raw) as { event?: string; data?: { id?: number; reference?: string; status?: string; amount?: number; fees?: number } };
   const reference = event.data?.reference;
   const eventKey = `${event.event || "unknown"}:${event.data?.id || reference || crypto.randomUUID()}`;
-  const firstSeen = await recordPaymentEvent(eventKey, event.event || "unknown", reference);
-  if (firstSeen && event.event === "charge.success" && reference && event.data?.status === "success") await activatePurchase(reference, event.data);
+  if (event.event === "charge.success" && reference && event.data?.status === "success") {
+    // Activation is idempotent. Record the event only after both the purchase
+    // and entitlement updates succeed so a transient failure remains retryable.
+    const activated = await activatePurchase(reference, event.data);
+    if (!activated) return NextResponse.json({ error: "Purchase activation failed" }, { status: 409 });
+  }
+  await recordPaymentEvent(eventKey, event.event || "unknown", reference);
   return NextResponse.json({ received: true });
 }
