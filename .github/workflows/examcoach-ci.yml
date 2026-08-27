@@ -1,0 +1,32 @@
+name: ExamCoach CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "projects/examcoach-sa/**"
+      - ".github/workflows/examcoach-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "projects/examcoach-sa/**"
+      - ".github/workflows/examcoach-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/examcoach-sa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: projects/examcoach-sa/package-lock.json
+      - run: npm ci
+      - run: npm run build

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.sites-runtime/
+.wrangler/
+.env*
+!.env.example
+*.log
+*.tsbuildinfo
